@@ -89,7 +89,9 @@ const elements: Elements[] = [
       value: '/docs/intro'
     }
   },
-]
+];
+
+const lightMode = ['light', 'dark'];
 
 test.describe('тесты главной страницы', () => {
   test.beforeEach(async ({page})=> {
@@ -125,5 +127,13 @@ elements.forEach(({locator, name, attribute}) => {
 test('Проверка переключения лайт мода', async ({ page }) => {
   await page.getByLabel('Switch between dark and light').click();
   await expect.soft(page.locator('html')).toHaveAttribute('data-theme', 'light');
+});
+lightMode.forEach((value) => {
+test(`Проверка стилей активного ${value} мода`, async ({page}) => {
+  await page.evaluate((value)=> {
+    document.querySelector('html')?.setAttribute('data-theme', value);
+  }, value);
+  await expect(page).toHaveScreenshot(`pageWith ${value}Mode.png`);
+});
 });
 });
